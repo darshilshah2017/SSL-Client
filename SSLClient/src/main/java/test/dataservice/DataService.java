@@ -22,14 +22,18 @@ import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.ssl.SSLContexts;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 import test.binding.SSLClientRestController;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "server.url")
@@ -81,13 +85,27 @@ public class DataService {
         return rs;
     }
 
-    public String invokeGetAPI(String  mid){
+    public String invokeGetAPI(Map<String, String> map){
 
-        HttpEntity<String> httpEntity = new HttpEntity<String>(mid);
-        String requestURL = getGetMerchant().concat("?merchantId="+mid);
+        String uri = null;
+
+        if(map!=null && !map.isEmpty()){
+            UriComponentsBuilder componentsBuilder = UriComponentsBuilder.fromHttpUrl(getGetMerchant());
+            for(Map.Entry<String, String> entry: map.entrySet()){
+                componentsBuilder.queryParam(entry.getKey(), UriUtils.encode(entry.getValue(), Charset.forName("UTF-8")));
+//                componentsBuilder.queryParam(entry.getKey(), UriUtils.encode(entry.getValue(), StandardCharsets.UTF_8));
+            }
+            uri = componentsBuilder.build(true).toString();
+        }
+        else{
+            uri = getGetMerchant();
+        }
+
+        HttpEntity<String> httpEntity = null;
+//        String requestURL = getGetMerchant().concat("?merchantId="+mid);
         String rs;
         try{
-            ResponseEntity<String> responseEntity = restTemplate.exchange(requestURL,HttpMethod.GET,httpEntity,String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(uri,HttpMethod.GET,httpEntity,String.class);
             rs = responseEntity.getBody();
         }
         catch(Exception e){

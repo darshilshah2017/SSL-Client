@@ -16,6 +16,8 @@ import test.dataservice.DataService;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/merchant")
@@ -49,7 +51,9 @@ public class SSLClientRestController {
     @GetMapping("/query")
     public String queryMerchant(@RequestParam(name = "merchantId", required = true) String merchantId){
         logger.info("queryMerchant request received: {}",merchantId);
-        return dataService.invokeGetAPI(merchantId);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("merchantId", merchantId);
+        return dataService.invokeGetAPI(map);
     }
 
 }
