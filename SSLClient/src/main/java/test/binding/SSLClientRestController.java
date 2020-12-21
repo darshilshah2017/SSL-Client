@@ -1,5 +1,6 @@
 package test.binding;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import test.businessservice.BusinessService;
 import test.dataservice.DataService;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -40,20 +42,19 @@ public class SSLClientRestController {
     }
 
     @Autowired
-    DataService dataService;
+    BusinessService businessService;
 
     @PostMapping("/create")
     public String createMerchant(@RequestBody String merchantName){
         logger.info("createMerchant request received: {}",merchantName);
-        return dataService.invokePostAPI(merchantName);
+        return businessService.createMerchant(merchantName);
     }
 
     @GetMapping("/query")
-    public String queryMerchant(@RequestParam(name = "merchantId", required = true) String merchantId){
+    public String queryMerchant(@RequestParam(name = "merchantId", required = true) String merchantId) throws JsonProcessingException {
         logger.info("queryMerchant request received: {}",merchantId);
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("merchantId", merchantId);
-        return dataService.invokeGetAPI(map);
+
+        return businessService.getMerchant(merchantId);
     }
 
 }
