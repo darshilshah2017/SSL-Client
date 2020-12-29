@@ -29,6 +29,8 @@ import test.datamodel.ErrorResponse;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -120,8 +122,9 @@ public class DataService{
 
         if(getTrustStore()!=null && getTrustStorePassword()!=null){
             SSLContextBuilder builder = SSLContextBuilder.create();
-            File file = new File(getTrustStore());
-            SSLContext sslContext = builder.loadTrustMaterial(file,getTrustStorePassword().toCharArray()).build();
+//            File file = new File(getTrustStore());
+            URL url = getClass().getResource(getTrustStore());
+            SSLContext sslContext = builder.loadTrustMaterial(url,getTrustStorePassword().toCharArray()).build();
             SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
             CloseableHttpClient httpClientBuilder = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
             httpRequestFactory.setHttpClient(httpClientBuilder);

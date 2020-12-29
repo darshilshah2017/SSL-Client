@@ -1,0 +1,4 @@
+FROM openjdk:8
+ADD target/SSLClient-1.0-SNAPSHOT.jar SSLClient-1.0-SNAPSHOT.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","SSLClient-1.0-SNAPSHOT.jar"]
